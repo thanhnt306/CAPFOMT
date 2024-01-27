@@ -12,11 +12,15 @@ SOURCES += \
     axis.cpp \
     main.cpp \
     mainwindow.cpp \
+    pointgrid.cpp \
+    pointgriddata.cpp \
     simwidget.cpp
 
 HEADERS += \
     axis.h \
     mainwindow.h \
+    pointgrid.h \
+    pointgriddata.h \
     simwidget.h
 
 FORMS += \
@@ -30,4 +34,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     shaders/axis.frag \
-    shaders/axis.vert
+    shaders/axis.vert \
+    shaders/pointcloud.frag \
+    shaders/pointcloud.vert

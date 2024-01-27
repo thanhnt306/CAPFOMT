@@ -2,6 +2,7 @@
 #define SIMWIDGET_H
 
 #include "axis.h"
+#include "pointgrid.h"
 
 #include <QWidget>
 #include <QOpenGLWidget>
@@ -48,6 +49,7 @@ private:
     float pitch = 0.0f;
 
     Axis axis;
+    PointGrid pointGrid;
     void setEyeCoordinates();
 };
 

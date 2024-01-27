@@ -17,8 +17,8 @@ void Axis::initializeGL()
 
     delete m_program;
     m_program = new QOpenGLShaderProgram;
-    qDebug() << m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../CAPFOMT/shaders/axis.vert");
-    qDebug() << m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../CAPFOMT/shaders/axis.frag");
+    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../CAPFOMT/shaders/axis.vert");
+    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../CAPFOMT/shaders/axis.frag");
     m_program->link();
 
     m_projMatrixLoc = m_program->uniformLocation("projMatrix");

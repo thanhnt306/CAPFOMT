@@ -34,6 +34,7 @@ void SimWidget::paintGL()
     camera.lookAt(m_eye, m_target, QVector3D(0, 1, 0));
 
     axis.paintGL(camera, m_proj);
+    pointGrid.paintGL(camera, m_proj);
 }
 
 void SimWidget::initializeGL()
@@ -44,6 +45,7 @@ void SimWidget::initializeGL()
     f->glEnable(GL_PROGRAM_POINT_SIZE);
 
     axis.initializeGL();
+    pointGrid.initializeGL();
 }
 
 void SimWidget::mousePressEvent(QMouseEvent *event)
