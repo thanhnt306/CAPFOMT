@@ -37,3 +37,33 @@ int PointGridData::getTotalGridPoint()
 {
     return m_resolutionX * m_resolutionY * m_resolutionZ;
 }
+
+int PointGridData::resolutionX() const
+{
+    return m_resolutionX;
+}
+
+int PointGridData::resolutionY() const
+{
+    return m_resolutionY;
+}
+
+int PointGridData::resolutionZ() const
+{
+    return m_resolutionZ;
+}
+
+float PointGridData::gridSize() const
+{
+    return m_gridSize;
+}
+
+QVector3D PointGridData::gridCenter() const
+{
+    return m_gridCenter;
+}
+
+float PointGridData::getScaleFactor() const
+{
+    return scaleFactor;
+}

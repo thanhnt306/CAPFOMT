@@ -14,14 +14,21 @@ SOURCES += \
     mainwindow.cpp \
     pointgrid.cpp \
     pointgriddata.cpp \
-    simwidget.cpp
+    pressuredata.cpp \
+    simwidget.cpp \
+    transducer.cpp \
+    transducerarrangement.cpp
 
 HEADERS += \
+    Setting.h \
     axis.h \
     mainwindow.h \
     pointgrid.h \
     pointgriddata.h \
-    simwidget.h
+    pressuredata.h \
+    simwidget.h \
+    transducer.h \
+    transducerarrangement.h
 
 FORMS += \
     mainwindow.ui \

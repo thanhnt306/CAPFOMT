@@ -25,6 +25,9 @@ class SimWidget : public QOpenGLWidget
 public:
     explicit SimWidget(QWidget *parent = nullptr);
     ~SimWidget();
+    void PointSizeChanged(int value);
+    void PointMaxValueChanged(int value);
+    void PointMinValueChanged(int value);
 
 protected:
     void resizeGL(int width, int height) override;
@@ -50,6 +53,7 @@ private:
 
     Axis axis;
     PointGrid pointGrid;
+    std::vector<Transducer*>* transducers = new std::vector<Transducer*>();
     void setEyeCoordinates();
 };
 

@@ -2,6 +2,7 @@
 #include "ui_simwidget.h"
 #include <QOpenGLExtraFunctions>
 #include <QMouseEvent>
+#include "transducerarrangement.h"
 
 SimWidget::SimWidget(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -14,6 +15,24 @@ SimWidget::SimWidget(QWidget *parent)
 SimWidget::~SimWidget()
 {
     delete ui;
+}
+
+void SimWidget::PointSizeChanged(int value)
+{
+    pointGrid.PointSizeChanged(value);
+    update();
+}
+
+void SimWidget::PointMaxValueChanged(int value)
+{
+    pointGrid.PointMaxValueChanged(value);
+    update();
+}
+
+void SimWidget::PointMinValueChanged(int value)
+{
+    pointGrid.PointMinValueChanged(value);
+    update();
 }
 
 void SimWidget::resizeGL(int width, int height)
@@ -41,11 +60,12 @@ void SimWidget::initializeGL()
 {
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
+    TransducerArrangement::getInstance()->initTransduccers(transducers);
     f->glEnable(GL_DEPTH_TEST);
     f->glEnable(GL_PROGRAM_POINT_SIZE);
 
     axis.initializeGL();
-    pointGrid.initializeGL();
+    pointGrid.initializeGL(transducers);
 }
 
 void SimWidget::mousePressEvent(QMouseEvent *event)

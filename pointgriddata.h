@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector3D>
+#include "setting.h"
 
 class PointGridData : QObject
 {
@@ -13,16 +14,28 @@ public:
     void initializePoints(float *pointsData);
     int getTotalGridPoint();
 
+    int resolutionX() const;
+
+    int resolutionY() const;
+
+    int resolutionZ() const;
+
+    float gridSize() const;
+
+    QVector3D gridCenter() const;
+
+    float getScaleFactor() const;
+
 private:
 
-    int m_resolutionX = 20; // number of point
-    int m_resolutionY = 20;
-    int m_resolutionZ = 20;
+    int m_resolutionX = 200; // number of point
+    int m_resolutionY = 200;
+    int m_resolutionZ = 1;
 
-    float scaleFactor = 0.02;
+    float scaleFactor = 10.0f;
 
-    float m_gridSize = 1; //mm
-    QVector3D m_gridCenter = QVector3D(0.0f,0.0f,0.0f);
+    float m_gridSize = 0.001; //    m
+    QVector3D m_gridCenter = QVector3D(0.0f,0.1f,0.0f);
 };
 
 #endif // POINTGRIDDATA_H
