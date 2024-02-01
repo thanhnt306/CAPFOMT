@@ -1,7 +1,7 @@
 #ifndef TRANSDUCERARRANGEMENT_H
 #define TRANSDUCERARRANGEMENT_H
 
-#include <Transducer.h>
+#include <simmulation/transducer.h>
 
 class TransducerArrangement
 {

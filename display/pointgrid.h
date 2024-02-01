@@ -1,9 +1,9 @@
 #ifndef POINTGRID_H
 #define POINTGRID_H
 
-#include "pointgriddata.h"
-#include "pressuredata.h"
-#include "transducer.h"
+#include "simmulation/pointgriddata.h"
+#include "simmulation/pressuredata.h"
+#include "simmulation/transducer.h"
 
 #include <QObject>
 #include <QOpenGLBuffer>

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QVector3D>
-#include "setting.h"
+#include "business/setting.h"
 
 class PointGridData : QObject
 {

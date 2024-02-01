@@ -9,30 +9,30 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    axis.cpp \
+    display\axis.cpp \
     main.cpp \
-    mainwindow.cpp \
-    pointgrid.cpp \
-    pointgriddata.cpp \
-    pressuredata.cpp \
-    simwidget.cpp \
-    transducer.cpp \
-    transducerarrangement.cpp
+    display\mainwindow.cpp \
+    display\pointgrid.cpp \
+    simmulation\pointgriddata.cpp \
+    simmulation\pressuredata.cpp \
+    display\simwidget.cpp \
+    simmulation\transducer.cpp \
+    business\transducerarrangement.cpp
 
 HEADERS += \
-    Setting.h \
-    axis.h \
-    mainwindow.h \
-    pointgrid.h \
-    pointgriddata.h \
-    pressuredata.h \
-    simwidget.h \
-    transducer.h \
-    transducerarrangement.h
+    business\Setting.h \
+    display\axis.h \
+    display\mainwindow.h \
+    display\pointgrid.h \
+    simmulation\pointgriddata.h \
+    simmulation\pressuredata.h \
+    display\simwidget.h \
+    simmulation\transducer.h \
+    simmulation\transducerarrangement.h
 
 FORMS += \
-    mainwindow.ui \
-    simwidget.ui
+    display\mainwindow.ui \
+    display\simwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

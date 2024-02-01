@@ -2,7 +2,7 @@
 #include "ui_simwidget.h"
 #include <QOpenGLExtraFunctions>
 #include <QMouseEvent>
-#include "transducerarrangement.h"
+#include "business/transducerarrangement.h"
 
 SimWidget::SimWidget(QWidget *parent)
     : QOpenGLWidget(parent)
