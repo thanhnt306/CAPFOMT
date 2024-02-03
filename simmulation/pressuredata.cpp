@@ -13,6 +13,11 @@ PressureData::~PressureData()
 void PressureData::calculatePressureRMS(float *pressureData, std::vector<Transducer *>* transducers, PointGridData *pointGridData)
 {
     qDebug() << "transducers size:" << transducers->size();
+    calculatePressureRMS_CPU(pressureData, transducers, pointGridData);
+}
+
+void PressureData::calculatePressureRMS_CPU(float *pressureData, std::vector<Transducer *> *transducers, PointGridData *pointGridData)
+{
     int resolutionX = pointGridData->resolutionX();
     int resolutionY = pointGridData->resolutionY();
     int resolutionZ = pointGridData->resolutionZ();
@@ -86,4 +91,14 @@ void PressureData::calculatePressureRMS(float *pressureData, std::vector<Transdu
             }
         }
     }
+}
+
+extern "C" double* addVectorsGPU(double* a, double* b, int n);
+
+void PressureData::calculatePressureRMS_GPU(float *pressureData, std::vector<Transducer *> *transducers, PointGridData *pointGridData)
+{
+    int n = 1<<27;
+    double* a;
+    double* b;
+    auto r2 = addVectorsGPU(a, b, n);
 }

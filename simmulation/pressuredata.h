@@ -18,6 +18,9 @@ private:
     float m_waveLength = m_soundSpeed/m_freq;
     float m_waveNumber = 2*M_PI/m_waveLength;
     float m_vpp = 40; //    V
+
+    void calculatePressureRMS_CPU(float *pressureData,std::vector<Transducer *>* transducers, PointGridData* pointGridData);
+    void calculatePressureRMS_GPU(float *pressureData,std::vector<Transducer *>* transducers, PointGridData* pointGridData);
 };
 
 #endif // PRESSUREDATA_H
