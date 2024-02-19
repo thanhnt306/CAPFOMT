@@ -1,8 +1,7 @@
 #include "pointgriddata.h"
 #include "qdebug.h"
 
-PointGridData::PointGridData(QObject *parent)
-    :QObject(parent)
+PointGridData::PointGridData()
 {
 
 }
@@ -16,15 +15,15 @@ void PointGridData::initializePoints(float *pointsData)
 {
     // int positiveXPointNum = m_resolutionX/2u + m_resolutionX%2;
     // int negativeXPointNum = positiveXPointNum - m_resolutionX%2;
-    float xRootPos = -(m_resolutionX/2.0f)*m_gridSize + m_gridCenter.x();
-    float yRootPos = -(m_resolutionY/2.0f)*m_gridSize + m_gridCenter.y();
-    float zRootPos = -(m_resolutionZ/2.0f)*m_gridSize + m_gridCenter.z();
+    float xRootPos = -(m_resolutionX/2.0f)*m_gridSize + m_gridCenter.x;
+    float yRootPos = -(m_resolutionY/2.0f)*m_gridSize + m_gridCenter.y;
+    float zRootPos = -(m_resolutionZ/2.0f)*m_gridSize + m_gridCenter.z;
 
-    for(int x = 0; x < m_resolutionX; x++)
+    for(int z = 0; z < m_resolutionZ; z++)
     {
         for(int y = 0; y < m_resolutionY; y++)
         {
-            for(int z = 0; z < m_resolutionZ; z++) {
+            for(int x = 0; x < m_resolutionX; x++) {
                 *pointsData++ = (xRootPos + x*m_gridSize)*scaleFactor;
                 *pointsData++ = (yRootPos + y*m_gridSize)*scaleFactor;
                 *pointsData++ = (zRootPos + z*m_gridSize)*scaleFactor;
@@ -58,7 +57,7 @@ float PointGridData::gridSize() const
     return m_gridSize;
 }
 
-QVector3D PointGridData::gridCenter() const
+Vec3D PointGridData::gridCenter() const
 {
     return m_gridCenter;
 }

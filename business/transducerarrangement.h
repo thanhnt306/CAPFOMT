@@ -16,7 +16,7 @@ public:
     };
 
     void initTransduccers(std::vector<Transducer *> *transducers);
-    Transducer* addTranducer(QVector3D pos = QVector3D(0,0,0), QVector3D normal= QVector3D(0,1,0));
+    Transducer* addTranducer(Vec3D pos = Vec3D(0,0,0), Vec3D normal= Vec3D(0,1,0));
 private:
 
     static TransducerArrangement* instance;

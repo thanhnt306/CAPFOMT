@@ -25,9 +25,12 @@ CUDA_ARCH = sm_60                   # Type of CUDA architecture
 NVCC_OPTIONS = --use_fast_math
 
 # include paths
+INCLUDE_PATHS = $$split(INCLUDE, $$PATH_SEPARATOR)
+INCLUDEPATH += INCLUDE_PATHS
 INCLUDEPATH += $$CUDA_DIR/include \
                $$CUDA_DIR/common/inc \
-               $$CUDA_DIR/../shared/inc
+               $$CUDA_DIR/../shared/inc \
+               $$PWD
 
 # The following makes sure all path names (which often include spaces) are put between quotation marks
 CUDA_INC = $$join(INCLUDEPATH,'" -I"','-I"','"')
@@ -82,6 +85,7 @@ SOURCES += \
     business\transducerarrangement.cpp
 
 HEADERS += \
+    business\Vec3D.h \
     business\Setting.h \
     display\axis.h \
     display\mainwindow.h \
