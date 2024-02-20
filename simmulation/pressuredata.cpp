@@ -99,6 +99,7 @@ void PressureData::calculatePressureRMS_GPU(float *pressureData, std::vector<Tra
     magCalc(magData, transducers, pointGridData, prePara);
 
     int idx = 0;
+    float min=std::numeric_limits<float>::max();
     float max=std::numeric_limits<float>::min();
 
     for(int z = 0; z < pointGridData->resolutionZ(); z++ )
@@ -109,6 +110,8 @@ void PressureData::calculatePressureRMS_GPU(float *pressureData, std::vector<Tra
             {
                 if(magData[idx]>max)
                     max=magData[idx];
+                else if(magData[idx]<min)
+                    min=magData[idx];
                 idx++;
             }
         }
@@ -122,8 +125,8 @@ void PressureData::calculatePressureRMS_GPU(float *pressureData, std::vector<Tra
         {
             for(int x = 0; x < pointGridData->resolutionX(); x++)
             {
-                pressureData[idx] = magData[idx] / max;
-                // qDebug() << idx << "---" << magData[idx];
+                float percent = (magData[idx])/(max);
+                pressureData[idx] = percent;
                 idx++;
             }
         }

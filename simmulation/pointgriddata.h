@@ -27,8 +27,8 @@ public:
 private:
 
     int m_resolutionX = 200; // number of point
-    int m_resolutionY = 198;
-    int m_resolutionZ = 1;
+    int m_resolutionY = 200;
+    int m_resolutionZ = 2;
 
     float scaleFactor = 10.0f;
 

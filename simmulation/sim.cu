@@ -13,7 +13,7 @@ __device__ Transducer *d_transducers;
 __global__ void simKernel(cudaPitchedPtr pitchPtr, Vec3D gridCenter, float gridSize, size_t numOfTransducer, PressureParameter prePara)
 {
 
-    size_t pitchZ = pitchPtr.pitch/sizeof(float);
+    size_t pitchX = pitchPtr.pitch/sizeof(float);
 
     float* magData = (float*)pitchPtr.ptr;
 
@@ -25,7 +25,7 @@ __global__ void simKernel(cudaPitchedPtr pitchPtr, Vec3D gridCenter, float gridS
     float yRootPos = -(gridDim.x/2.0f)*gridSize + gridCenter.y;
     float zRootPos = -(gridDim.y/2.0f)*gridSize + gridCenter.z;
 
-    int idx = zId*gridDim.x*pitchZ + yId*pitchZ + xId;
+    int idx = zId*gridDim.x*pitchX + yId*pitchX + xId;
 
     Vec3D targetPt(
         (xRootPos + xId*gridSize),
@@ -47,7 +47,11 @@ __global__ void simKernel(cudaPitchedPtr pitchPtr, Vec3D gridCenter, float gridS
         float dot = delta.x*d_transducers[t].normal().x + delta.y*d_transducers[t].normal().y + delta.z*d_transducers[t].normal().z;
         float lenSq1 = r;
         float lenSq2 = d_transducers[t].normal().length();
-        float theta = acos(dot/(lenSq1 * lenSq2));
+        float theta;
+        if (dot == lenSq1)
+            theta = acos(1.0f/lenSq2);
+        else
+            theta = acos(dot/(lenSq1 * lenSq2));
         float phi = d_transducers[t].getRelativeRMSPhase();
 
         float Df=2 * j1f(prePara.waveNumber * d_transducers[t].diameter()/2*sinf(theta)) /
