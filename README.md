@@ -34,9 +34,41 @@ Before proceeding, ensure your development environment meets the following requi
     ```
 
 3.  **Enable Hardlinks (Highly Recommended)**:
-    To save disk space, set the following Environment Variable in Windows:
+    To save disk space, set the following Environment Variable in Windows (or intergrate in CMakePresets.json at step 2):
     *   **Variable:** `VCPKG_USE_HARDLINKS`
     *   **Value:** `1`
+
+4.  **Configure `vcpkg.json`**:
+    Each library in this project (`Utility`, `AI`, etc.) uses a `vcpkg.json` file to manage dependencies.
+    You must create or update this file in the **root folder of EACH library**.
+    ```json
+    {
+        "name": "efas-dependencies",
+        "version": "1.0.0",
+        "dependencies": [
+          "boost-filesystem",
+          "boost-locale",
+          "boost-system",
+          "boost-graph",
+          "boost-regex",
+          "boost-container",
+          "boost-geometry",
+          "nlohmann-json",
+          "spdlog",
+          "eigen3",
+          "spectra",
+          "asio",
+          "crow",
+          "cpr",
+          "nanoflann",
+          "gdal",
+          "sqlite3", 
+          "libpq",   
+          "libpqxx"
+        ],
+        "builtin-baseline": "128988b03fc9216012e4983a81da9e86911230f8"
+    }
+    ```
 
 ### 1.2 Setup Manual Libraries (For EPANET & ONNX Runtime)
 
