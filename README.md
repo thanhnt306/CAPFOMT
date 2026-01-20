@@ -103,6 +103,8 @@ You must create or update this file in the **root folder of EACH library**. Ensu
   ]
 }
 
+---
+
 ## 🚀 Step 3: Build and Install
 
 Due to dependency chains, you **MUST** build and install the libraries in the following **Bottom-Up Order**:
