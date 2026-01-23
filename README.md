@@ -1,91 +1,111 @@
-# EFAS Libraries System
+# EFAS Libraries - Developer Guidance
 
-This repository contains the core C++ libraries for the EFAS project (`Utility`, `Database`, `DataAccess`, `DataPackage`, `AI`, `HydraulicModel`).
+This document outlines the workflow for using and developing the EFAS C++ ecosystem (`Utility`, `Database`, `DataAccess`, `DataPackage`, `AI`, `HydraulicModel`, ...) using **vcpkg** and **Modern CMake**.
 
-The system is built using **Modern CMake**, manages standard dependencies via **vcpkg** (Manifest Mode), and requires manual setup for specific binaries (EPANET, ONNX Runtime). It supports a modular architecture with a unified SDK output.
-
-## 📋 Prerequisites
-
-Before proceeding, ensure your development environment meets the following requirements:
-
-1.  **Visual Studio 2019** (or newer)
-    *   Workload required: *Desktop development with C++*.
-2.  **CMake** (Version 3.20 or higher).
-3.  **Git**.
-4.  **PowerShell** (Recommended for running build commands).
+## 📋 Table of Contents
+1.  [Prerequisites](#prerequisites)
+2.  [Consumer Workflow: Creating a New Client App](#1-consumer-workflow-creating-a-new-client-app)
+3.  [Maintainer Workflow: Modifying & Updating Libraries](#2-maintainer-workflow-modifying--updating-libraries)
 
 ---
 
-## 🛠️ Step 1: Setup Dependencies
+## Prerequisites
 
-### 1.1 Setup vcpkg (For Boost, JSON, CPR, Eigen, etc.)
+Ensure your environment is set up:
+*   **Visual Studio 2019/2022** (C++ Desktop Workload).
+*   **CMake** (Version 3.20 or higher).
+*   **Git** (optional with SSH or OAuth Configured for private repos).
+*   **vcpkg** installed and integrated (`vcpkg integrate install`).
+*   **Environment Variable**: `VCPKG_USE_HARDLINKS = 1` (Highly recommended to save disk space).
 
-1.  **Clone vcpkg** (If you haven't already):
-    ```powershell
-    cd C:/Dev  # Or your preferred tools directory
-    git clone https://github.com/microsoft/vcpkg.git
-    cd vcpkg
-    .\bootstrap-vcpkg.bat
-    ```
+---
 
-2.  **Enable User-wide Integration**:
-    ```powershell
-    .\vcpkg integrate install
-    ```
+## 1. Consumer Workflow: Creating a New Client App
 
-3.  **Enable Hardlinks (Highly Recommended)**:
-    To save disk space, set the following Environment Variable in Windows (or intergrate in CMakePresets.json at step 2):
-    *   **Variable:** `VCPKG_USE_HARDLINKS`
-    *   **Value:** `1`
+Follow these steps to create a new C++ Application (Console, Qt, or Tauri Backend) that uses EFAS libraries.
 
-4.  **Configure `vcpkg.json`**:
-    Each library in this project (`Utility`, `AI`, etc.) uses a `vcpkg.json` file to manage dependencies.
-    You must create or update this file in the **root folder of EACH library**.
-    ```json
+### Step 1.1: Configure `vcpkg.json`
+Create a `vcpkg.json` in your project root to declare dependencies.
+
+```json
+{
+  "name": "my-new-app",
+  "version": "1.0.0",
+  "dependencies": [
+    "efas-datapackage", 
+    "efas-ai",
+    "cpr",
+    "eigen3"
+  ],
+  "builtin-baseline": "YOUR_CURRENT_BASELINE_HASH"
+}
+```
+
+### 1.2 Configure `vcpkg-configuration.json`
+
+Create this file next to vcpkg.json to tell vcpkg where to find EFAS libraries (Custom Registry).
+
+```json
+{
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/microsoft/vcpkg",
+    "baseline": "2e65c0be072239da927899a229a397984be5c853" 
+  },
+  "registries": [
     {
-        "name": "efas-dependencies",
-        "version": "1.0.0",
-        "dependencies": [
-          "boost-filesystem",
-          "boost-locale",
-          "boost-system",
-          "boost-graph",
-          "boost-regex",
-          "boost-container",
-          "boost-geometry",
-          "nlohmann-json",
-          "spdlog",
-          "eigen3",
-          "spectra",
-          "asio",
-          "crow",
-          "cpr",
-          "nanoflann",
-          "gdal",
-          "sqlite3", 
-          "libpq",   
-          "libpqxx"
-        ],
-        "builtin-baseline": "128988b03fc9216012e4983a81da9e86911230f8"
+      "kind": "git",
+      "repository": "git@github.com:EFAS-Technologies/efas-vcpkg-registry.git",
+      "baseline": "LATEST_COMMIT_HASH_OF_YOUR_REGISTRY",
+      "packages": [ 
+        "efas-utility", "efas-database", "efas-dataaccess", 
+        "efas-hydraulicmodel", "efas-datapackage", "efas-ai", 
+        "epanet", "onnxruntime", "efas-gis" 
+      ]
     }
-    ```
+  ]
+}
+```
+### 1.3 Configure `CMakeLists.txt`
 
-### 1.2 Setup Manual Libraries (For EPANET & ONNX Runtime)
+Use find_package to load the libraries. Note that the CMake Package Name might differ from the vcpkg Package Name.
 
-Since `epanet` and `onnxruntime` are not used via vcpkg in this configuration, you must download their binaries manually.
+Vcpkg Name	CMake Find Name	Target Name
+efas-utility	Utility	EFAS::Utility
+efas-database	Database	EFAS::Database
+efas-ai	AI	EFAS::AI
+epanet	epanet	epanet::epanet
+onnxruntime	ONNXRuntime	onnxruntime::onnxruntime
 
-1.  **EPANET 2.2**: Download and extract to a known location (e.g., `C:/Libs/epanet2_2`).
-2.  **ONNX Runtime**: Download the Windows x64 zip from GitHub Releases and extract (e.g., `C:/Libs/onnxruntime-win-x64`).
+Example CMakeLists.txt:
 
----
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(MyClientApp LANGUAGES CXX)
 
-## ⚙️ Step 2: Configure `CMakePresets.json`
+# Global compiler settings
+if(MSVC)
+    add_compile_definitions(NOMINMAX) # Important for Windows
+    add_compile_options(/bigobj)      # Important for Eigen/Boost
+    add_compile_options(/utf-8)
+endif()
 
-Every library in this project (`Utility`, `AI`, etc.) uses a `CMakePresets.json` file to manage paths.
+# Find Packages
+find_package(DataPackage CONFIG REQUIRED)
+find_package(AI CONFIG REQUIRED)
 
-You must create or update this file in the **root folder of EACH library**. Ensure the paths match your local machine.
+add_executable(MyClientApp main.cpp)
 
-**Template for `CMakePresets.json`:**
+# Link Libraries
+target_link_libraries(MyClientApp PRIVATE
+    EFAS::DataPackage
+    EFAS::AI
+)
+```
+
+### 1.4 Configure `CMakePresets.json`
+
+Standardize build settings using presets.
 
 ```json
 {
@@ -97,33 +117,15 @@ You must create or update this file in the **root folder of EACH library**. Ensu
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build",
-      "environment": {
-        "VCPKG_USE_HARDLINKS": "1"
-      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-
-        // [VCPKG CONFIG]
-        "CMAKE_TOOLCHAIN_FILE": "C:/Dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_INSTALLED_DIR": "C:/Dev/EFAS_Libs/Common_Vcpkg",
-
-        // [SDK CONFIG]
-        // All libraries will install to this common folder:
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/../EFAS_SDK",
-        // Libraries will look for dependencies in this folder:
-        "CMAKE_PREFIX_PATH": "${sourceDir}/../EFAS_SDK",
-
-        // [MANUAL LIBS PATHS]
-        // Update these to where you extracted the files in Step 1.2
-        "EpanetLib_ROOT": "C:/Libs/epanet2_2",
-        "ONNXRuntime_ROOT": "C:/Libs/onnxruntime-win-x64"
+        "CMAKE_TOOLCHAIN_FILE": "C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     },
     {
       "name": "windows-release",
-      "displayName": "Windows Release (x64)",
-      "inherits": "windows-base"
+      "inherits": "windows-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],
   "buildPresets": [
@@ -135,54 +137,89 @@ You must create or update this file in the **root folder of EACH library**. Ensu
   ]
 }
 ```
+### 1.5 Configure and Build
 
----
+Once all files are set up, run the build process. vcpkg will automatically download and compile all dependencies (this may take a while for the first run).
+Using Command Line (PowerShell) from terminal of your ide
 
-## 🚀 Step 3: Build and Install
+```powershell
+# 1. Configure (Generates build files and runs vcpkg install)
+cmake --preset windows-release
 
-Due to dependency chains, you **MUST** build and install the libraries in the following **Bottom-Up Order**:
+# 2. Build (Compiles the code)
+cmake --build --preset release
+```
 
-1.  **Utility** (Core)
-2.  **Database** (Depends on Utility)
-3.  **HydraulicModel** (Depends on Utility, Epanet)
-4.  **DataAccess** (Depends on Utility, Database, HydraulicModel)
-5.  **DataPackage** (Depends on all above)
-6.  **AI** (Depends on all above + ONNX)
+## 2. Maintainer Workflow: Modifying & Updating Libraries
 
-### Build Commands
+When you need to fix a bug or dev new feature in a library (e.g., Utility) and update it for the Client App, follow this 3-Step Cycle.
 
-For **each library** in the order above, open a terminal in its root folder and run:
+### Phase A: Modify Source Code (The Library Repo)
 
-1.  **Configure**:
-    ```powershell
-    cmake --preset windows-release
-    ```
+1. Open the library repo (e.g., efas-utility).
+2. Make changes to the code.
+3. Local Test: You can try to build it locally using its own vcpkg.json to ensure it compiles.
+4. Git Commit & Push:
+   ```powershell
+   git add .
+   git commit -m "Fix bug in systemobserver"
+   git push origin main
+   ```
+5. Get the Commit Hash:
+   ```powershell
+   git rev-parse HEAD
+   # Example Output: a1b2c3d... (Copy this)
 
-2.  **Build**:
-    ```powershell
-    cmake --build --preset release
-    ```
+### Phase B: Update Registry (The Metadata)
 
-3.  **Install** (Copies files to `EFAS_SDK`):
-    ```powershell
-    cmake --install build
-    ```
+1. Open the Registry repo (efas-vcpkg-registry).
+2. Edit ports/efas-utility/portfile.cmake.
+3. Update the REF field with the new Commit Hash from Phase A.
+   ```cmake
+   vcpkg_from_git(
+       ...
+       REF a1b2c3d... # Paste new hash here
+       ...
+   )
+   ```
+4. [IMPORTANT] Commit the Portfile changes first:
+   Vcpkg needs this commit to calculate the correct tree hash.
+   ```powershell
+   git add ports/efas-utility/portfile.cmake
+   git commit -m "Update efas-utility ref to a1b2c3d"
+   ```
+5. Update Version Database:
+   ```powershell
+   # Replace path to your vcpkg.exe
+   vcpkg x-add-version efas-utility --overwrite-version --x-builtin-ports-root=./ports --x-builtin-registry-versions-dir=./versions
+   ```
+6. Commit the Version Database changes & Push:
+   Now commit the changes that vcpkg just made to the versions/ folder.
+   ```powershell
+   git add versions/
+   git commit -m "Update version database for efas-utility"
+   git push origin main
+   ```
+7. Get Registry Commit Hash:
+   ```powershell
+   git rev-parse HEAD
+   # Example Output: 998877... (Copy this for Phase C)
+   ```
 
-> **Note:** If `cmake --install` fails, verify that the previous library in the chain was successfully installed into `EFAS_SDK`.
+### Phase C: Update Client (The Application)
 
----
-
-## 📦 Step 4: Verify Output
-
-After building all libraries, you should have a unified **`EFAS_SDK`** folder (located parallel to your project folders) with this structure:
-
-```text
-EFAS_SDK/
-├── bin/        # Runtime DLLs (Utility.dll, cpr.dll, onnxruntime.dll...)
-├── lib/        # Import Libs (.lib)
-│   └── cmake/  # CMake Config files (UtilityConfig.cmake, etc.)
-└── include/    # Headers
-    ├── Utility/
-    ├── Database/
-    ├── DataAccess/
-    └── ...
+1. Open your Client Project.
+2. Open vcpkg-configuration.json.
+3. Update the baseline of your custom registry with the hash from Phase B.
+   ```json
+   "registries": [
+     {
+       "kind": "git",
+       "repository": "...",
+       "baseline": "998877..." // Paste Registry hash here
+     }
+   ]
+   ```
+4. Rebuild:
+   Delete the build folder (Recommended to ensure clean update).
+   Run CMake Configure. Vcpkg will detect the change, download the new source code, and rebuild the library.
